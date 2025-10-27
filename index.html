@@ -29,142 +29,109 @@
 
       <!-- 📘 ESTUDIAR -->
       <section id="estudiar" class="oculto">
-  <h2>Unidad 2 – Clasificación de Servicios y Metodologías de Desarrollo SOA</h2>
+        <h2>Unidad 2 – Clasificación de Servicios y Metodologías SOA</h2>
 
-  <h3>1️⃣ Introducción a SOA</h3>
-  <p>
-    La <strong>Arquitectura Orientada a Servicios (SOA)</strong> es un modelo que permite construir sistemas distribuidos
-    basados en servicios independientes, reutilizables y accesibles mediante interfaces estándar.
-    Cada servicio representa una funcionalidad del negocio y puede combinarse con otros para formar procesos más complejos.
-  </p>
-  <p>
-    SOA facilita la <strong>integración</strong> de aplicaciones, la <strong>interoperabilidad</strong> entre tecnologías
-    distintas y la <strong>flexibilidad</strong> para adaptarse a cambios en los procesos de negocio.
-  </p>
+        <h3>1️⃣ Introducción a SOA</h3>
+        <p>
+          <strong>SOA (Service Oriented Architecture)</strong> es un modelo arquitectónico que organiza la lógica del software en servicios reutilizables e independientes.
+          Su objetivo es lograr la alineación entre <strong>tecnología y negocio</strong>, mejorar la agilidad y promover la reutilización.
+        </p>
 
-  <h3>2️⃣ Clasificación de Servicios en SOA</h3>
-  <p>
-    Dentro de una arquitectura SOA, los servicios se clasifican principalmente en tres tipos:
-    <strong>Servicios de Tarea, Entidad y Utilidad</strong>.
-  </p>
+        <h3>2️⃣ Tipos de Servicios en SOA</h3>
+        <h4>🔹 Servicios de Tarea</h4>
+        <ul>
+          <li>Orquestan varios servicios para ejecutar un proceso completo.</li>
+          <li>Ejemplo: <em>ServicioProcesarPedido</em> que valida cliente, calcula total y envía confirmación.</li>
+          <li>No son muy reutilizables porque resuelven necesidades específicas.</li>
+        </ul>
 
-  <h4>🔹 Servicios de Tarea</h4>
-  <ul>
-    <li>Representan procesos de negocio completos o actividades específicas dentro de una organización.</li>
-    <li>Orquestan otros servicios (de entidad y utilidad) para cumplir su propósito.</li>
-    <li>No suelen ser reutilizables fuera del contexto de negocio donde fueron diseñados.</li>
-    <li><strong>Ejemplo:</strong> “Procesar pedido” que llama a servicios de cliente, inventario y notificaciones.</li>
-  </ul>
+        <h4>🔹 Servicios de Entidad</h4>
+        <ul>
+          <li>Gestionan datos del negocio con operaciones CRUD (crear, leer, actualizar, eliminar).</li>
+          <li>Ejemplo: <em>ServicioCliente</em> o <em>ServicioProducto</em>.</li>
+          <li>Son altamente reutilizables.</li>
+        </ul>
 
-  <h4>🔹 Servicios de Entidad</h4>
-  <ul>
-    <li>Manipulan los datos del negocio: clientes, productos, pedidos, etc.</li>
-    <li>Implementan operaciones CRUD (Crear, Leer, Actualizar y Eliminar).</li>
-    <li>Son de uso general y alta reutilización.</li>
-    <li><strong>Ejemplo:</strong> “ServicioCliente” o “ServicioInventario”.</li>
-  </ul>
+        <h4>🔹 Servicios de Utilidad</h4>
+        <ul>
+          <li>Proveen funciones técnicas comunes (autenticación, envío de correos, encriptación).</li>
+          <li>Ejemplo: <em>ServicioNotificaciones</em> o <em>ServicioSeguridad</em>.</li>
+          <li>Son los más reutilizables en una arquitectura SOA.</li>
+        </ul>
 
-  <h4>🔹 Servicios de Utilidad</h4>
-  <ul>
-    <li>Proporcionan funciones técnicas comunes y de soporte.</li>
-    <li>Son totalmente independientes del negocio.</li>
-    <li>Muy reutilizables por diferentes servicios.</li>
-    <li><strong>Ejemplo:</strong> Envío de correos, validación de usuarios, cifrado de datos.</li>
-  </ul>
+        <p><strong>Relación:</strong> Los servicios de tarea se apoyan en servicios de entidad y utilidad para ejecutar procesos de negocio completos.</p>
 
-  <h4>📘 Interacción entre tipos de servicios</h4>
-  <p>
-    Un proceso de negocio completo se logra cuando un <strong>servicio de tarea</strong> coordina la ejecución de varios
-    <strong>servicios de entidad</strong> y <strong>de utilidad</strong>.  
-    Por ejemplo: <em>ProcesarPedido → ServicioCliente + ServicioProducto + ServicioPago + ServicioNotificaciones</em>.
-  </p>
+        <hr />
 
-  <hr />
+        <h3>3️⃣ Metodologías de Desarrollo SOA</h3>
 
-  <h3>3️⃣ Metodologías de Desarrollo SOA</h3>
-  <p>
-    Las <strong>metodologías de desarrollo SOA</strong> guían la creación e implementación de servicios dentro de la arquitectura.
-    A continuación se describen las más comunes:
-  </p>
+        <h4>🔸 Top-Down</h4>
+        <ul>
+          <li>Parte desde los procesos de negocio.</li>
+          <li>Permite una alineación fuerte entre TI y objetivos empresariales.</li>
+          <li>Requiere más tiempo de análisis y recursos.</li>
+        </ul>
 
-  <h4>🔸 Top-Down</h4>
-  <ul>
-    <li>Parte del análisis de los procesos de negocio.</li>
-    <li>Se diseñan primero los servicios según las necesidades estratégicas.</li>
-    <li>Alta alineación entre TI y negocio, pero mayor costo inicial.</li>
-    <li><strong>Ejemplo:</strong> diseñar un sistema de facturación desde los flujos empresariales.</li>
-  </ul>
+        <h4>🔸 Bottom-Up</h4>
+        <ul>
+          <li>Parte de los sistemas existentes y los convierte en servicios.</li>
+          <li>Menor costo inicial, ideal para modernizar sistemas heredados.</li>
+          <li>Menor alineación con el negocio.</li>
+        </ul>
 
-  <h4>🔸 Bottom-Up</h4>
-  <ul>
-    <li>Comienza con los sistemas existentes (legacy) y los convierte en servicios.</li>
-    <li>Permite una adopción gradual de SOA.</li>
-    <li>Menor costo inicial pero puede generar servicios poco alineados al negocio.</li>
-    <li><strong>Ejemplo:</strong> exponer funciones de un ERP antiguo como servicios web.</li>
-  </ul>
+        <h4>🔸 Meet-in-the-Middle</h4>
+        <ul>
+          <li>Combina Top-Down y Bottom-Up.</li>
+          <li>Equilibrio entre visión de negocio y viabilidad técnica.</li>
+          <li>Metodología más práctica y usada.</li>
+        </ul>
 
-  <h4>🔸 Meet-in-the-Middle</h4>
-  <ul>
-    <li>Combina Top-Down y Bottom-Up.</li>
-    <li>Se definen los procesos clave y se aprovechan componentes ya existentes.</li>
-    <li>Es la metodología más práctica y usada actualmente.</li>
-  </ul>
+        <h4>🔸 SOMA (IBM)</h4>
+        <ul>
+          <li>Metodología formal de IBM con tres fases: Identificación, Especificación y Realización.</li>
+          <li>Considera gobernanza, calidad de servicio y componentes reutilizables.</li>
+          <li>Metodología formal y estructurada, ideal para grandes organizaciones.</li>
+        </ul>
 
-  <h4>🔸 SOMA (Service-Oriented Modeling and Architecture)</h4>
-  <ul>
-    <li>Propuesta de IBM con tres fases: Identificación, Especificación y Realización.</li>
-    <li>Considera gobernanza, calidad de servicio y componentes reutilizables.</li>
-    <li>Metodología formal y estructurada, ideal para grandes organizaciones.</li>
-  </ul>
+        <h4>🔸 Agile SOA</h4>
+        <ul>
+          <li>Aplica principios ágiles (Scrum, XP) al desarrollo orientado a servicios.</li>
+          <li>Iteraciones cortas, entregas rápidas y colaboración continua.</li>
+          <li>Ideal para entornos de cambio constante o desarrollo en la nube.</li>
+        </ul>
 
-  <h4>🔸 Agile SOA</h4>
-  <ul>
-    <li>Aplica principios ágiles (Scrum, XP) al desarrollo orientado a servicios.</li>
-    <li>Iteraciones cortas, entregas rápidas y colaboración continua.</li>
-    <li>Ideal para entornos de cambio constante o desarrollo en la nube.</li>
-  </ul>
-
-  <h4>📊 Comparativo de Metodologías</h4>
-  <table>
-    <thead>
-      <tr><th>Metodología</th><th>Ventajas</th><th>Desventajas</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Top-Down</td><td>Alineación con negocio</td><td>Requiere mucho análisis</td></tr>
-      <tr><td>Bottom-Up</td><td>Menor costo inicial</td><td>Poca alineación con negocio</td></tr>
-      <tr><td>Meet-in-the-Middle</td><td>Equilibrio práctico</td><td>Requiere buena coordinación</td></tr>
-      <tr><td>SOMA</td><td>Estructurado y completo</td><td>Complejo y costoso</td></tr>
-      <tr><td>Agile SOA</td><td>Flexible y rápido</td><td>Poca formalidad en documentación</td></tr>
-    </tbody>
-  </table>
-
-  <h4>📘 Conclusión</h4>
-  <p>
-    Cada metodología tiene su propósito:
-  </p>
-  <ul>
-    <li><strong>Top-Down</strong> → cuando el negocio lidera la transformación digital.</li>
-    <li><strong>Bottom-Up</strong> → para reutilizar sistemas existentes.</li>
-    <li><strong>Meet-in-the-Middle</strong> → equilibrio entre visión y realidad técnica.</li>
-    <li><strong>SOMA</strong> → proyectos grandes y formales.</li>
-    <li><strong>Agile SOA</strong> → entornos cambiantes y orientados a entregas rápidas.</li>
-  </ul>
-</section>
-
+        <h4>📘 Conclusión</h4>
+        <p>
+          Cada metodología se adapta al contexto:
+        </p>
+        <ul>
+          <li><strong>Negocio →</strong> Top-Down</li>
+          <li><strong>Modernización →</strong> Bottom-Up</li>
+          <li><strong>Equilibrio →</strong> Meet-in-the-Middle</li>
+          <li><strong>Gobernanza →</strong> SOMA</li>
+          <li><strong>Agilidad →</strong> Agile SOA</li>
+        </ul>
+      </section>
 
       <!-- 🧠 EXAMEN -->
       <section id="examen" class="oculto">
         <h2>Selecciona el examen</h2>
         <div id="menuExamen">
-          <button onclick="iniciarExamen('servicios')">🧩 Tipos de Servicios</button>
-          <button onclick="iniciarExamen('metodologias')">🧠 Metodologías SOA</button>
-          <button onclick="iniciarExamen('completo')">🧾 Examen Completo</button>
+          <button onclick="iniciarExamen('servicios')">🧩 Tipos de Servicios (50 preguntas)</button>
+          <button onclick="iniciarExamen('metodologias')">🧠 Metodologías SOA (50 preguntas)</button>
+          <button onclick="iniciarExamen('completo')">🧾 Examen Completo (50 mezcladas)</button>
         </div>
 
         <div id="contenedorPreguntas" class="oculto"></div>
-        <button id="btnFinalizar" class="oculto" onclick="finalizarExamen()">Finalizar</button>
-        <div id="resultado"></div>
-        <button id="btnReintentar" class="oculto" onclick="nuevoIntento()">Nuevo intento</button>
+
+        <div id="controles" class="oculto" style="margin-top:1rem;">
+          <button id="btnFinalizar" onclick="finalizarExamen()">Finalizar</button>
+          <button id="btnReintentar" class="oculto" onclick="nuevoIntento()">Nuevo intento</button>
+          <button id="btnRepasarPrevios" class="oculto" onclick="revisarErroresGuardados()">Repasar errores anteriores</button>
+          <button id="btnVolverMenu" class="oculto" onclick="reiniciarExamen()">Volver al menú</button>
+        </div>
+
+        <div id="resultado" style="margin-top:1rem;"></div>
       </section>
     </main>
 
