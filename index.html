@@ -1,144 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOA Trainer – Unidad 2</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unidad 2 - Resumen SOA</title>
+  <meta name="description" content="Resumen de la Unidad 2: Tipos de servicios y metodologías de desarrollo SOA" />
+  <style>
+    :root{
+      --bg:#0f1720; --card:#0b1220; --muted:#9aa5b1; --accent:#6ee7b7; --glass: rgba(255,255,255,0.03);
+      --maxw:1100px; --radius:14px; --gap:18px; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#08111a 0%, #0f1720 100%);color:#e6eef6}
+    .wrap{max-width:var(--maxw);margin:28px auto;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#34d399);display:flex;align-items:center;justify-content:center;color:#052018;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:22px}
+    p.lead{margin:4px 0 0;color:var(--muted)}
+    nav{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+    a.chip{background:var(--glass);padding:8px 12px;border-radius:999px;color:var(--accent);text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,0.03)}
+
+    main{display:grid;grid-template-columns:1fr 340px;gap:24px;margin-top:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .section h2{margin:0 0 8px;font-size:18px}
+    .muted{color:var(--muted);font-size:14px}
+    .list{padding-left:18px}
+    aside .card{position:sticky;top:28px}
+    .pill{display:inline-block;background:rgba(0,0,0,0.25);padding:6px 8px;border-radius:8px;font-size:13px;color:var(--muted);margin-right:8px}
+    footer{margin-top:24px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr} aside .card{position:static}}
+
+    /* print friendly */
+    @media print{body{background:white;color:black} .wrap{box-shadow:none;background:white} nav, .logo, .print-hide{display:none} a{color:black;text-decoration:underline}}
+
+    /* small helpers */
+    .kbd{background:#071422;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
     <header>
-      <h1>SOA Trainer – Unidad 2</h1>
-      <nav>
-        <button onclick="mostrarSeccion('inicio')">Inicio</button>
-        <button onclick="mostrarSeccion('estudiar')">Estudiar</button>
-        <button onclick="mostrarSeccion('examen')">Examen</button>
-      </nav>
+      <div class="brand">
+        <div class="logo">SOA</div>
+        <div>
+          <h1>Unidad 2 — Resumen: Tipos de servicios y Metodologías SOA</h1>
+          <p class="lead">Compendio basado en el archivo <strong>SOA_UNIDAD 2.pdf</strong> — contenido docente (2025)</p>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="chip print-hide" href="#" onclick="window.print();return false;">Imprimir / Exportar PDF</a>
+        <span class="pill">Formato: index.html</span>
+      </div>
     </header>
 
+    <nav>
+      <a class="chip" href="#concepto">Concepto</a>
+      <a class="chip" href="#tipos">Tipos de servicios</a>
+      <a class="chip" href="#tarea">Servicios de Tarea</a>
+      <a class="chip" href="#entidad">Servicios de Entidad</a>
+      <a class="chip" href="#utilidad">Servicios de Utilidad</a>
+      <a class="chip" href="#metodologias">Metodologías</a>
+      <a class="chip" href="#conclusion">Conclusión</a>
+    </nav>
+
     <main>
-      <!-- 🏠 INICIO -->
-      <section id="inicio" class="visible">
-        <h2>Bienvenido</h2>
-        <p>
-          Bienvenido a tu entrenador interactivo de <strong>SOA Unidad 2</strong>.  
-          Aquí podrás estudiar los temas y poner a prueba tus conocimientos con exámenes por tema o un examen completo.
-        </p>
-        <p>Selecciona <strong>“Estudiar”</strong> para repasar los temas o <strong>“Examen”</strong> para evaluar tu conocimiento.</p>
+      <section>
+        <article class="card section" id="concepto">
+          <h2>Concepto general de SOA</h2>
+          <p class="muted">SOA (Service Oriented Architecture) es un modelo de arquitectura que busca alinear tecnología y negocio mediante servicios reutilizables y compuestos.</p>
+          <ul class="list">
+            <li><strong>Objetivo:</strong> aumentar agilidad de TI y lograr ROI a mediano plazo.</li>
+            <li><strong>Servicios:</strong> unidades de lógica con <em>reutilización</em>, <em>composición</em>, <em>estandarización</em>, <em>autonomía</em> y <em>abstracción</em>.</li>
+            <li><strong>Gobernanza:</strong> la categorización y el catálogo de servicios mantienen la salud de la arquitectura.</li>
+          </ul>
+        </article>
+
+        <article class="card section" id="tipos">
+          <h2>Clasificación de servicios</h2>
+          <p class="muted">Las buenas prácticas recomiendan categorizar servicios para facilitar su administración y reutilización. Existen tres tipos primarios:</p>
+          <ol class="list">
+            <li>Servicios de Tarea</li>
+            <li>Servicios de Entidad</li>
+            <li>Servicios de Utilidad</li>
+          </ol>
+        </article>
+
+        <article class="card section" id="tarea">
+          <h2>Servicios de Tarea</h2>
+          <p class="muted">Orquestan varios servicios de entidad y utilidad para ejecutar procesos de negocio completos.</p>
+          <h3>Características</h3>
+          <ul class="list">
+            <li>Orquestación y coordinación de flujos.</li>
+            <li>Suelen tener menor grado de reutilización.</li>
+            <li>Se apoyan en servicios de entidad y utilidad.</li>
+          </ul>
+          <h3>Ejemplo: Checkout / ProcesarPedido</h3>
+          <p class="muted">Verifica cliente, consulta inventario, procesa pago, crea pedido y envía notificación.</p>
+        </article>
+
+        <article class="card section" id="entidad">
+          <h2>Servicios de Entidad</h2>
+          <p class="muted">Centrados en datos del negocio (clientes, productos, pedidos). Expone operaciones CRUD y es altamente reutilizable.</p>
+          <h3>Funciones típicas</h3>
+          <ul class="list">
+            <li>crearCliente(), obtenerClientePorID(), actualizarCliente(), eliminarCliente()</li>
+            <li>No suelen contener lógica compleja; gestionan datos.</li>
+          </ul>
+          <h3>Ejemplos de uso</h3>
+          <p class="muted">Consulta de inventario en tiempo real, gestión de registros de clientes, almacenamiento de pedidos.</p>
+        </article>
+
+        <article class="card section" id="utilidad">
+          <h2>Servicios de Utilidad</h2>
+          <p class="muted">Encapsulan funciones técnicas reutilizables (autenticación, notificaciones, cifrado, logging).</p>
+          <h3>Características</h3>
+          <ul class="list">
+            <li>Muy reutilizables.</li>
+            <li>No contienen lógica de negocio propia.</li>
+            <li>Soportan otros servicios en la plataforma.</li>
+          </ul>
+          <h3>Ejemplos</h3>
+          <ul class="list">
+            <li>ServicioNotificaciones: enviarCorreo(destinatario, asunto, mensaje)</li>
+            <li>ServicioAutenticación, ServicioPagoSeguro, ServicioLogs</li>
+          </ul>
+        </article>
+
+        <article class="card section" id="metodologias">
+          <h2>Metodologías de desarrollo para SOA</h2>
+          <p class="muted">No existe una única metodología estándar; se adaptan enfoques de desarrollo y principios SOA para garantizar interoperabilidad y reutilización.</p>
+
+          <h3>Top–Down</h3>
+          <p class="muted">Parte de la visión del negocio. Etapas: identificar procesos, definir servicios, diseñar contratos, implementar.</p>
+          <p class="muted"><strong>Ventajas:</strong> alineamiento y estandarización. <strong>Desventajas:</strong> mayor tiempo y costo inicial.</p>
+
+          <h3>Bottom–Up</h3>
+          <p class="muted">Parte de sistemas existentes, exponiendo funcionalidades como servicios.</p>
+          <p class="muted"><strong>Ventajas:</strong> menor costo inicial, aprovecha heredados. <strong>Desventajas:</strong> menor alineación con negocio.</p>
+
+          <h3>Meet-in-the-Middle</h3>
+          <p class="muted">Híbrida; combina Top-Down y Bottom-Up para equilibrar estrategia y factibilidad técnica.</p>
+
+          <h3>SOMA (IBM)</h3>
+          <p class="muted">Metodología formal: identificación, especificación y realización de servicios. Muy estructurada pero con curva de aprendizaje alta.</p>
+
+          <h3>Agile SOA (Scrum + SOA)</h3>
+          <p class="muted">Sprints para entregar servicios incrementales, feedback continuo, documentación ligera. Ideal para entornos ágiles y cloud-native.</p>
+
+        </article>
+
+        <article class="card section" id="conclusion">
+          <h2>Conclusión</h2>
+          <p class="muted">Las metodologías se adaptan al contexto: Top-Down cuando el negocio manda; Bottom-Up para modernizar; Meet-in-the-Middle para equilibrio; SOMA para gobernanza; Agile SOA para rapidez y adaptación. El objetivo final es convertir procesos empresariales en servicios reutilizables y alineados al negocio.</p>
+        </article>
+
       </section>
 
-      <!-- 📘 ESTUDIAR -->
-      <section id="estudiar" class="oculto">
-        <h2>Unidad 2 – Clasificación de Servicios y Metodologías SOA</h2>
-
-        <h3>1️⃣ Introducción a SOA</h3>
-        <p>
-          <strong>SOA (Service Oriented Architecture)</strong> es un modelo arquitectónico que organiza la lógica del software en servicios reutilizables e independientes.
-          Su objetivo es lograr la alineación entre <strong>tecnología y negocio</strong>, mejorar la agilidad y promover la reutilización.
-        </p>
-
-        <h3>2️⃣ Tipos de Servicios en SOA</h3>
-        <h4>🔹 Servicios de Tarea</h4>
-        <ul>
-          <li>Orquestan varios servicios para ejecutar un proceso completo.</li>
-          <li>Ejemplo: <em>ServicioProcesarPedido</em> que valida cliente, calcula total y envía confirmación.</li>
-          <li>No son muy reutilizables porque resuelven necesidades específicas.</li>
-        </ul>
-
-        <h4>🔹 Servicios de Entidad</h4>
-        <ul>
-          <li>Gestionan datos del negocio con operaciones CRUD (crear, leer, actualizar, eliminar).</li>
-          <li>Ejemplo: <em>ServicioCliente</em> o <em>ServicioProducto</em>.</li>
-          <li>Son altamente reutilizables.</li>
-        </ul>
-
-        <h4>🔹 Servicios de Utilidad</h4>
-        <ul>
-          <li>Proveen funciones técnicas comunes (autenticación, envío de correos, encriptación).</li>
-          <li>Ejemplo: <em>ServicioNotificaciones</em> o <em>ServicioSeguridad</em>.</li>
-          <li>Son los más reutilizables en una arquitectura SOA.</li>
-        </ul>
-
-        <p><strong>Relación:</strong> Los servicios de tarea se apoyan en servicios de entidad y utilidad para ejecutar procesos de negocio completos.</p>
-
-        <hr />
-
-        <h3>3️⃣ Metodologías de Desarrollo SOA</h3>
-
-        <h4>🔸 Top-Down</h4>
-        <ul>
-          <li>Parte desde los procesos de negocio.</li>
-          <li>Permite una alineación fuerte entre TI y objetivos empresariales.</li>
-          <li>Requiere más tiempo de análisis y recursos.</li>
-        </ul>
-
-        <h4>🔸 Bottom-Up</h4>
-        <ul>
-          <li>Parte de los sistemas existentes y los convierte en servicios.</li>
-          <li>Menor costo inicial, ideal para modernizar sistemas heredados.</li>
-          <li>Menor alineación con el negocio.</li>
-        </ul>
-
-        <h4>🔸 Meet-in-the-Middle</h4>
-        <ul>
-          <li>Combina Top-Down y Bottom-Up.</li>
-          <li>Equilibrio entre visión de negocio y viabilidad técnica.</li>
-          <li>Metodología más práctica y usada.</li>
-        </ul>
-
-        <h4>🔸 SOMA (IBM)</h4>
-        <ul>
-          <li>Metodología formal de IBM con tres fases: Identificación, Especificación y Realización.</li>
-          <li>Considera gobernanza, calidad de servicio y componentes reutilizables.</li>
-          <li>Metodología formal y estructurada, ideal para grandes organizaciones.</li>
-        </ul>
-
-        <h4>🔸 Agile SOA</h4>
-        <ul>
-          <li>Aplica principios ágiles (Scrum, XP) al desarrollo orientado a servicios.</li>
-          <li>Iteraciones cortas, entregas rápidas y colaboración continua.</li>
-          <li>Ideal para entornos de cambio constante o desarrollo en la nube.</li>
-        </ul>
-
-        <h4>📘 Conclusión</h4>
-        <p>
-          Cada metodología se adapta al contexto:
-        </p>
-        <ul>
-          <li><strong>Negocio →</strong> Top-Down</li>
-          <li><strong>Modernización →</strong> Bottom-Up</li>
-          <li><strong>Equilibrio →</strong> Meet-in-the-Middle</li>
-          <li><strong>Gobernanza →</strong> SOMA</li>
-          <li><strong>Agilidad →</strong> Agile SOA</li>
-        </ul>
-      </section>
-
-      <!-- 🧠 EXAMEN -->
-      <section id="examen" class="oculto">
-        <h2>Selecciona el examen</h2>
-        <div id="menuExamen">
-          <button onclick="iniciarExamen('servicios')">🧩 Tipos de Servicios (50 preguntas)</button>
-          <button onclick="iniciarExamen('metodologias')">🧠 Metodologías SOA (50 preguntas)</button>
-          <button onclick="iniciarExamen('completo')">🧾 Examen Completo (50 mezcladas)</button>
+      <aside>
+        <div class="card">
+          <h3>Recursos rápidos</h3>
+          <p class="muted">Basado íntegramente en: <strong>SOA_UNIDAD 2.pdf</strong></p>
+          <p class="muted">Temas clave:</p>
+          <ul class="list">
+            <li>Definición y principios de SOA</li>
+            <li>Tipos: Tarea, Entidad, Utilidad</li>
+            <li>Metodologías: Top-Down, Bottom-Up, Meet-in-the-Middle, SOMA, Agile SOA</li>
+          </ul>
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+          <p class="muted"><strong>Consejo:</strong> Mantén un catálogo categorizado para mejorar la gobernanza y la reutilización.</p>
         </div>
-
-        <div id="contenedorPreguntas" class="oculto"></div>
-
-        <div id="controles" class="oculto" style="margin-top:1rem;">
-          <button id="btnFinalizar" onclick="finalizarExamen()">Finalizar</button>
-          <button id="btnReintentar" class="oculto" onclick="nuevoIntento()">Nuevo intento</button>
-          <button id="btnRepasarPrevios" class="oculto" onclick="revisarErroresGuardados()">Repasar errores anteriores</button>
-          <button id="btnVolverMenu" class="oculto" onclick="reiniciarExamen()">Volver al menú</button>
-        </div>
-
-        <div id="resultado" style="margin-top:1rem;"></div>
-      </section>
+      </aside>
     </main>
 
     <footer>
-      <p>Desarrollado por Axel Aispuro • SOA Trainer © 2025</p>
+      <div class="muted">Generado a partir del material de la Unidad 2 — SOA (2025). Diseñado para estudio y consulta rápida.</div>
     </footer>
-
-    <script src="script.js"></script>
-  </body>
+  </div>
+</body>
 </html>
