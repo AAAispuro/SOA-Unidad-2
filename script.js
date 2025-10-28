@@ -1,186 +1,296 @@
-// script.js – Examen versión 5 (10 preguntas por tema, modo repaso inteligente)
+// script.js - Examen versión 6 (20 preguntas por tema, examen completo 20 mezcladas, repaso inteligente)
+// Reemplaza totalmente el script.js anterior por este archivo.
 
+// --- Utilidades iniciales y manejo de vistas ---
 function mostrarSeccion(id) {
   document.querySelectorAll("section").forEach(sec => sec.classList.remove("visible"));
-  document.getElementById(id).classList.add("visible");
+  const el = document.getElementById(id);
+  if (el) el.classList.add("visible");
   if (id === "examen") reiniciarExamen();
 }
 
-/* -------------------------
-   Bancos de preguntas (10 cada uno)
--------------------------*/
+const STORAGE_KEY = "soa_failed_questions_v6";
+let tipoExamen = ""; // 'servicios' | 'metodologias' | 'completo' | 'repaso'
+let preguntasSeleccionadas = []; // array de objetos { p, r, c, tema }
 
-// 🔹 Tipos de Servicios
+// --- Bancos: 20 preguntas por tema (redactadas y alineadas al PDF) ---
+
 const bancoServicios = [
-  { p: "1. ¿Qué servicio administra los datos principales del negocio, como clientes o productos?", r: ["Servicio de Entidad", "Servicio de Tarea", "Servicio de Utilidad"], c: 0 },
-  { p: "2. ¿Cuál servicio se encarga de coordinar varios servicios para ejecutar un proceso completo?", r: ["Servicio de Entidad", "Servicio de Tarea", "Servicio de Utilidad"], c: 1 },
-  { p: "3. ¿Cuál servicio se usa para enviar correos electrónicos o notificaciones?", r: ["Servicio de Entidad", "Servicio de Tarea", "Servicio de Utilidad"], c: 2 },
-  { p: "4. Un servicio que realiza operaciones CRUD pertenece al tipo:", r: ["Tarea", "Entidad", "Utilidad"], c: 1 },
-  { p: "5. ¿Qué servicio orquesta otros servicios para cumplir una acción empresarial como procesar una compra?", r: ["Entidad", "Tarea", "Utilidad"], c: 1 },
-  { p: "6. ¿Cuál de estos servicios ofrece funciones comunes como validación o encriptación?", r: ["Entidad", "Tarea", "Utilidad"], c: 2 },
-  { p: "7. ¿Qué servicio almacena y expone la información estructurada de los datos de negocio?", r: ["Entidad", "Tarea", "Utilidad"], c: 0 },
-  { p: "8. Un 'ServicioCliente' es un ejemplo de:", r: ["Servicio de Entidad", "Servicio de Tarea", "Servicio de Utilidad"], c: 0 },
-  { p: "9. Un 'ServicioSeguridad' que maneja autenticación corresponde a:", r: ["Servicio de Entidad", "Servicio de Tarea", "Servicio de Utilidad"], c: 2 },
-  { p: "10. ¿Qué servicio es menos reutilizable porque se diseña para un proceso específico?", r: ["Entidad", "Tarea", "Utilidad"], c: 1 }
+  { p: "1. ¿Qué clase de servicio maneja datos del negocio (clientes, productos, pedidos)?", r: ["Servicio de Utilidad", "Servicio de Entidad", "Servicio de Tarea"], c: 1 },
+  { p: "2. ¿Cuál servicio es responsable de orquestar varios servicios para completar un proceso como 'procesar pedido'?", r: ["Servicio de Tarea", "Servicio de Entidad", "Servicio de Utilidad"], c: 0 },
+  { p: "3. ¿Qué tipo de servicio típicamente implementa operaciones CRUD (crear, leer, actualizar, eliminar)?", r: ["Entidad", "Tarea", "Utilidad"], c: 0 },
+  { p: "4. ¿Qué tipo de servicio sería ideal para enviar correos y notificaciones?", r: ["Entidad", "Utilidad", "Tarea"], c: 1 },
+  { p: "5. ¿Cuál servicio se diseña para ser lo más independiente y reutilizable posible para tareas técnicas?", r: ["Utilidad", "Entidad", "Tarea"], c: 0 },
+  { p: "6. ¿Qué servicio es menos reutilizable porque responde a un flujo de negocio específico?", r: ["Entidad", "Utilidad", "Tarea"], c: 2 },
+  { p: "7. ¿Qué servicio debe versionarse con cuidado porque otros servicios consumen su contrato de datos?", r: ["Entidad", "Utilidad", "Tarea"], c: 0 },
+  { p: "8. ¿Qué servicio normalmente no contiene lógica técnica como encriptación o envío de correos?", r: ["Utilidad", "Tarea", "Entidad"], c: 2 },
+  { p: "9. ¿Qué servicio suele exponer endpoints para consultas y actualizaciones de productos?", r: ["Entidad", "Tarea", "Utilidad"], c: 0 },
+  { p: "10. ¿Qué servicio es más apropiado para centralizar validación técnica (formato de correo, longitud de contraseña)?", r: ["Entidad", "Tarea", "Utilidad"], c: 2 },
+  { p: "11. ¿Qué servicio tendría sentido para implementar un gateway de pagos o integración con pasarelas?", r: ["Tarea", "Entidad", "Utilidad"], c: 2 },
+  { p: "12. ¿Qué servicio se usa para mantener integridad y reglas de negocio sobre los datos (ej. invariant constraints)?", r: ["Entidad", "Tarea", "Utilidad"], c: 0 },
+  { p: "13. ¿Qué servicio es el encargado de coordinar acciones como validar inventario y cobrar al cliente en un flujo?", r: ["Utilidad", "Entidad", "Tarea"], c: 2 },
+  { p: "14. ¿Qué servicio sería el más indicado para exponer métricas, logs y auditoría técnica?", r: ["Entidad", "Utilidad", "Tarea"], c: 1 },
+  { p: "15. ¿Qué servicio se considera transversal y consumido por múltiples procesos y servicios de negocio?", r: ["Tarea", "Entidad", "Utilidad"], c: 2 },
+  { p: "16. ¿Cuál de los siguientes es un ejemplo de servicio de entidad?", r: ["ServicioCliente", "ServicioNotificaciones", "ServicioOrquestador"], c: 0 },
+  { p: "17. ¿Cuál de los siguientes es un ejemplo de servicio de utilidad?", r: ["ServicioPago", "ServicioNotificaciones", "ServicioPedido"], c: 1 },
+  { p: "18. ¿Qué servicio se diseña pensando más en datos y menos en proceso?", r: ["Tarea", "Entidad", "Utilidad"], c: 1 },
+  { p: "19. ¿Qué tipo de servicio debe ser documentado con contratos claros (APIs y esquemas)?", r: ["Entidad", "Tarea", "Utilidad"], c: 0 },
+  { p: "20. ¿Cuál es la principal razón para separar lógica en entidad/utilidad/tarea?", r: ["Reducir pruebas", "Aumentar acoplamiento", "Reutilización y alineación con el negocio"], c: 2 }
 ];
 
-// 🔹 Metodologías SOA
 const bancoMetodologias = [
-  { p: "1. ¿Qué metodología parte del análisis del negocio para definir los servicios?", r: ["Bottom-Up", "Top-Down", "Agile SOA"], c: 1 },
-  { p: "2. ¿Cuál enfoque parte de los sistemas existentes para exponerlos como servicios?", r: ["Top-Down", "Bottom-Up", "SOMA"], c: 1 },
-  { p: "3. ¿Qué metodología combina la visión del negocio con la técnica?", r: ["Meet-in-the-Middle", "Top-Down", "Agile SOA"], c: 0 },
-  { p: "4. ¿Qué metodología fue propuesta por IBM y tiene fases de Identificación, Especificación y Realización?", r: ["SOMA", "Bottom-Up", "Agile SOA"], c: 0 },
-  { p: "5. ¿Qué metodología aplica principios ágiles al desarrollo de servicios?", r: ["Top-Down", "Agile SOA", "Meet-in-the-Middle"], c: 1 },
-  { p: "6. ¿Cuál es la principal ventaja de Top-Down?", r: ["Menor costo", "Alineación entre negocio y TI", "Mayor rapidez inicial"], c: 1 },
-  { p: "7. ¿Qué metodología se recomienda para modernizar sistemas heredados (legacy)?", r: ["Top-Down", "Bottom-Up", "SOMA"], c: 1 },
-  { p: "8. ¿Cuál es la metodología más formal y estructurada?", r: ["SOMA", "Agile SOA", "Meet-in-the-Middle"], c: 0 },
-  { p: "9. ¿Qué metodología busca entregas rápidas mediante iteraciones cortas?", r: ["SOMA", "Agile SOA", "Top-Down"], c: 1 },
-  { p: "10. ¿Cuál metodología ofrece un equilibrio entre estrategia de negocio y realidad técnica?", r: ["Bottom-Up", "Meet-in-the-Middle", "SOMA"], c: 1 }
+  { p: "1. ¿Qué metodología parte del análisis de procesos de negocio para definir servicios?", r: ["Bottom-Up", "Top-Down", "Agile SOA"], c: 1 },
+  { p: "2. ¿Qué metodología busca aprovechar sistemas existentes convirtiéndolos en servicios?", r: ["Top-Down", "Bottom-Up", "SOMA"], c: 1 },
+  { p: "3. ¿Qué enfoque combina análisis de negocio y aprovechamiento de sistemas actuales (híbrido)?", r: ["Meet-in-the-Middle", "Bottom-Up", "Top-Down"], c: 0 },
+  { p: "4. ¿Qué metodología es un enfoque formal de IBM con fases de Identificación, Especificación y Realización?", r: ["SOMA", "Agile SOA", "Bottom-Up"], c: 0 },
+  { p: "5. ¿Qué metodología aplica principios ágiles como iteraciones y sprints al desarrollo de servicios?", r: ["SOMA", "Agile SOA", "Top-Down"], c: 1 },
+  { p: "6. ¿Cuál es una ventaja de Top-Down?", r: ["Alineación con negocio", "Bajo costo inicial", "Desarrollo inmediato"], c: 0 },
+  { p: "7. ¿Qué desventaja se asocia comúnmente con Bottom-Up?", r: ["Mayor alineación con negocio", "Menor alineación con negocio", "Mayor formalidad"], c: 1 },
+  { p: "8. ¿Qué metodología es ideal cuando se necesita gobernanza y modelado riguroso en empresas grandes?", r: ["Agile SOA", "SOMA", "Bottom-Up"], c: 1 },
+  { p: "9. ¿Qué enfoque es más rápido para obtener prototipos funcionando pero puede dar menos estandarización?", r: ["Top-Down", "Bottom-Up", "SOMA"], c: 1 },
+  { p: "10. ¿Qué ventaja principal ofrece Meet-in-the-Middle?", r: ["Ignorar sistemas heredados", "Equilibrar visión y realidad técnica", "Eliminar gobernanza"], c: 1 },
+  { p: "11. ¿Qué metodología prioriza identificar servicios reutilizables a nivel de negocio antes de implementarlos?", r: ["Bottom-Up", "Top-Down", "Agile SOA"], c: 1 },
+  { p: "12. ¿Qué metodología suele recomendar entregas frecuentes y feedback temprano?", r: ["SOMA", "Agile SOA", "Top-Down"], c: 1 },
+  { p: "13. ¿Qué enfoque es más apropiado cuando hay muchos sistemas legacy y se desea modernizar gradualmente?", r: ["Top-Down", "Bottom-Up", "Agile SOA"], c: 1 },
+  { p: "14. ¿Qué metodología puede ser costosa y compleja por su formalidad y fases definidas?", r: ["Agile SOA", "Bottom-Up", "SOMA"], c: 2 },
+  { p: "15. ¿Qué enfoque favorece entregar valor útil rápidamente mediante iteraciones?", r: ["SOMA", "Agile SOA", "Top-Down"], c: 1 },
+  { p: "16. ¿Cuál es una razón para elegir Top-Down en una organización?", r: ["Acelerar sin planificación", "Alinear TI con estrategia de negocio", "Evitar gobernanza"], c: 1 },
+  { p: "17. ¿Cuál es un riesgo de aplicar solo Bottom-Up sin coordinación?", r: ["Duplicidad de servicios y poca estandarización", "Exceso de documentación", "Entrega lenta"], c: 0 },
+  { p: "18. ¿Qué metodología propone fases claras que incluyen la identificación de servicios?", r: ["Agile SOA", "SOMA", "Bottom-Up"], c: 1 },
+  { p: "19. ¿Cuál metodología se adapta bien a entornos cloud por su velocidad y flexibilidad?", r: ["SOMA", "Agile SOA", "Top-Down"], c: 1 },
+  { p: "20. Si quieres equilibrio entre visión de negocio y reutilización técnica, ¿qué metodología elegirías?", r: ["Bottom-Up", "Meet-in-the-Middle", "SOMA"], c: 1 }
 ];
 
-/* -------------------------
-   Variables globales
--------------------------*/
-let tipoExamen = "";
-let preguntasSeleccionadas = [];
-const STORAGE_KEY = "soa_failed_questions_v5";
-
-/* -------------------------
-   Funciones principales
--------------------------*/
-function iniciarExamen(tipo) {
-  tipoExamen = tipo;
-  const contenedor = document.getElementById("contenedorPreguntas");
-  contenedor.innerHTML = "";
-  contenedor.classList.remove("oculto");
-  document.getElementById("resultado").innerHTML = "";
-  document.getElementById("menuExamen").classList.add("oculto");
-  document.getElementById("controles").classList.remove("oculto");
-
-  let banco = [];
-  if (tipo === "servicios") banco = bancoServicios.map(q => ({ ...q, tema: "servicios" }));
-  else if (tipo === "metodologias") banco = bancoMetodologias.map(q => ({ ...q, tema: "metodologias" }));
-  else if (tipo === "completo") {
-    const mezclado = [...bancoServicios, ...bancoMetodologias];
-    banco = seleccionarAleatorioSinRepetir(mezclado, 10);
-  }
-
-  preguntasSeleccionadas = banco;
-
-  preguntasSeleccionadas.forEach((q, idx) => {
-    const div = document.createElement("div");
-    div.classList.add("pregunta");
-    const etiqueta = tipo === "completo" ? (q.tema === "servicios" ? "[Tipos]" : "[Metodologías]") : "";
-    div.innerHTML = `<p>${idx + 1}. ${etiqueta} ${q.p}</p>`;
-    q.r.forEach((op, j) => {
-      div.innerHTML += `<label style="display:block;margin:4px 0;"><input type="radio" name="p${idx}" value="${j}"> ${op}</label>`;
-    });
-    contenedor.appendChild(div);
-  });
-
-  const erroresGuardados = obtenerErroresGuardados();
-  document.getElementById("btnRepasarPrevios").classList.toggle("oculto", !erroresGuardados.length);
-}
+// --- Funciones de selección y renderizado ---
 
 function seleccionarAleatorioSinRepetir(banco, cantidad) {
   const copia = [...banco];
   const seleccion = [];
   while (seleccion.length < Math.min(cantidad, copia.length)) {
     const i = Math.floor(Math.random() * copia.length);
-    seleccion.push(copia.splice(i, 1)[0]);
+    const item = copia.splice(i, 1)[0];
+    // Asegurar que cada objeto tenga campo tema
+    if (!item.tema) {
+      // deducir por presencia en arrays
+      item.tema = banco === bancoServicios ? "servicios" :
+                  banco === bancoMetodologias ? "metodologias" : (item.tema || "mix");
+    }
+    seleccion.push(item);
   }
   return seleccion;
 }
 
+function iniciarExamen(tipo) {
+  tipoExamen = tipo;
+  preguntasSeleccionadas = [];
+  const contenedor = document.getElementById("contenedorPreguntas");
+  contenedor.innerHTML = "";
+  contenedor.classList.remove("oculto");
+  document.getElementById("resultado").innerHTML = "";
+  document.getElementById("menuExamen").classList.add("oculto");
+  document.getElementById("controles").classList.remove("oculto");
+  document.getElementById("btnFinalizar").classList.remove("oculto");
+  document.getElementById("btnReintentar").classList.add("oculto");
+  document.getElementById("btnVolverMenu").classList.remove("oculto");
+
+  if (tipo === "servicios") {
+    preguntasSeleccionadas = seleccionarAleatorioSinRepetir(
+      bancoServicios.map(q => ({...q, tema: "servicios"})),
+      20
+    );
+  } else if (tipo === "metodologias") {
+    preguntasSeleccionadas = seleccionarAleatorioSinRepetir(
+      bancoMetodologias.map(q => ({...q, tema: "metodologias"})),
+      20
+    );
+  } else if (tipo === "completo") {
+    // seleccionar 10 de cada banco para total 20 (si hay suficientes)
+    const s = seleccionarAleatorioSinRepetir(bancoServicios.map(q => ({...q, tema: "servicios"})), 10);
+    const m = seleccionarAleatorioSinRepetir(bancoMetodologias.map(q => ({...q, tema: "metodologias"})), 10);
+    preguntasSeleccionadas = [...s, ...m];
+    // mezclar el conjunto final
+    preguntasSeleccionadas = preguntasSeleccionadas.sort(() => Math.random() - 0.5);
+  } else if (tipo === "repaso") {
+    // 'repaso' se maneja por revisarErroresGuardados, aquí no debería llamarse iniciarExamen
+    console.warn("iniciarExamen: tipo 'repaso' no acepta selección automática.");
+  }
+
+  // renderizar preguntas seleccionadas
+  preguntasSeleccionadas.forEach((q, idx) => {
+    const div = document.createElement("div");
+    div.className = "pregunta";
+    div.style.marginBottom = "0.8rem";
+    // si es examen completo, mostrar etiqueta
+    const etiqueta = (tipo === "completo" || q.tema === "repaso") ? (q.tema === "servicios" ? "[Tipos]" : (q.tema === "metodologias" ? "[Metodologías]" : "[Repaso]")) : "";
+    div.innerHTML = `<p>${idx + 1}. ${etiqueta} ${q.p}</p>`;
+    q.r.forEach((op, j) => {
+      const name = `p${idx}`;
+      div.innerHTML += `<label style="display:block; margin:4px 0;"><input type="radio" name="${name}" value="${j}"> ${op}</label>`;
+    });
+    contenedor.appendChild(div);
+  });
+
+  // mostrar/ocultar botón repasar errores según existan errores guardados
+  const errores = obtenerErroresGuardados();
+  document.getElementById("btnRepasarPrevios").classList.toggle("oculto", !errores.length);
+
+  // scroll al contenedor de preguntas
+  setTimeout(() => {
+    contenedor.scrollIntoView({ behavior: "smooth" });
+  }, 80);
+}
+
+// --- Finalizar examen y manejo de resultados ---
 function finalizarExamen() {
   const preguntas = document.querySelectorAll("#contenedorPreguntas .pregunta");
   let aciertos = 0;
   const incorrectas = [];
 
   preguntas.forEach((div, idx) => {
-    const seleccionada = div.querySelector("input[type='radio']:checked");
-    const correcta = preguntasSeleccionadas[idx].c;
-    if (seleccionada && parseInt(seleccionada.value, 10) === correcta) {
+    const seleccion = div.querySelector("input[type='radio']:checked");
+    const correctaIndex = preguntasSeleccionadas[idx].c;
+    if (seleccion && parseInt(seleccion.value, 10) === correctaIndex) {
       aciertos++;
-      div.style.background = "#e9f9e9";
+      div.style.background = "#eaf8ea";
     } else {
-      div.style.background = "#fdeaea";
+      div.style.background = "#fff2f0";
+      // guardar info de la pregunta incorrecta para repaso
       incorrectas.push({
         pregunta: preguntasSeleccionadas[idx].p,
         opciones: preguntasSeleccionadas[idx].r,
         correctaIndex: preguntasSeleccionadas[idx].c,
-        tema: preguntasSeleccionadas[idx].tema
+        tema: preguntasSeleccionadas[idx].tema || tipoExamen
       });
     }
   });
 
   const total = preguntas.length;
-  const porcentaje = (aciertos / total) * 100;
+  const porcentaje = total > 0 ? (aciertos / total) * 100 : 0;
   const resultado = document.getElementById("resultado");
   resultado.innerHTML = `
     <h3>Resultado</h3>
-    <p>✅ Correctas: <strong>${aciertos}/${total}</strong></p>
-    <p>❌ Incorrectas: <strong>${total - aciertos}</strong></p>
-    <p>📊 Porcentaje: <strong>${porcentaje.toFixed(0)}%</strong></p>
-    <p>${porcentaje >= 80 ? "🎉 ¡Excelente dominio del tema!" : "💡 Repasa los conceptos antes de volver a intentar."}</p>
+    <p>Correctas: <strong>${aciertos}/${total}</strong></p>
+    <p>Incorrectas: <strong>${total - aciertos}</strong></p>
+    <p>Porcentaje: <strong>${porcentaje.toFixed(0)}%</strong></p>
+    <p>${porcentaje >= 80 ? "🎉 ¡Excelente! Buen dominio." : "💡 Repasa los temas y vuelve a intentarlo."}</p>
   `;
 
-  if (incorrectas.length > 0) guardarErrores(incorrectas);
+  // guardar errores en localStorage (si hay)
+  if (incorrectas.length > 0) {
+    guardarErrores(incorrectas);
+    document.getElementById("btnRepasarPrevios").classList.remove("oculto");
+  }
+
+  // mostrar controles de reintento / volver
   document.getElementById("btnFinalizar").classList.add("oculto");
   document.getElementById("btnReintentar").classList.remove("oculto");
-  document.getElementById("btnRepasarPrevios").classList.remove("oculto");
+  document.getElementById("btnVolverMenu").classList.remove("oculto");
+  resultado.scrollIntoView({ behavior: "smooth" });
 }
 
 function nuevoIntento() {
-  iniciarExamen(tipoExamen);
+  // reinicia el mismo tipo de examen (si fue 'repaso', abrir repaso de nuevo)
+  if (tipoExamen === "repaso") {
+    revisarErroresGuardados();
+  } else {
+    iniciarExamen(tipoExamen);
+  }
 }
 
 function reiniciarExamen() {
+  // volver al menú principal del examen
   document.getElementById("menuExamen").classList.remove("oculto");
   document.getElementById("contenedorPreguntas").classList.add("oculto");
   document.getElementById("controles").classList.add("oculto");
+  document.getElementById("btnFinalizar").classList.add("oculto");
+  document.getElementById("btnReintentar").classList.add("oculto");
+  document.getElementById("btnRepasarPrevios").classList.add("oculto");
+  document.getElementById("btnVolverMenu").classList.add("oculto");
   document.getElementById("resultado").innerHTML = "";
+  preguntasSeleccionadas = [];
+  tipoExamen = "";
 }
 
-/* -------------------------
-   Repaso inteligente
--------------------------*/
-function guardarErrores(nuevas) {
-  const prev = obtenerErroresGuardados();
-  const combinadas = [...prev];
-  nuevas.forEach(n => {
-    if (!combinadas.some(e => e.pregunta === n.pregunta)) combinadas.push(n);
+// --- Repaso inteligente: guardar/leer/repasar errores ---
+function guardarErrores(nuevasIncorrectas) {
+  const previo = obtenerErroresGuardados();
+  const combinados = [...previo];
+  nuevasIncorrectas.forEach(nq => {
+    // evitar duplicados por texto de pregunta
+    if (!combinados.some(e => e.pregunta === nq.pregunta)) {
+      combinados.push(nq);
+    }
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(combinadas));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(combinados));
+  } catch (e) {
+    console.warn("Error guardando en localStorage:", e);
+  }
 }
 
 function obtenerErroresGuardados() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn("Error leyendo errores guardados:", e);
     return [];
   }
 }
 
 function revisarErroresGuardados() {
   const errores = obtenerErroresGuardados();
-  if (!errores.length) return alert("No hay preguntas guardadas para repasar.");
+  if (!errores || errores.length === 0) {
+    alert("No hay preguntas guardadas para repasar.");
+    return;
+  }
 
+  // preparar repaso
   tipoExamen = "repaso";
-  preguntasSeleccionadas = errores;
+  preguntasSeleccionadas = errores.map(e => ({
+    p: e.pregunta,
+    r: e.opciones,
+    c: e.correctaIndex,
+    tema: e.tema || "repaso"
+  }));
 
   const contenedor = document.getElementById("contenedorPreguntas");
   contenedor.innerHTML = "";
+  contenedor.classList.remove("oculto");
   document.getElementById("menuExamen").classList.add("oculto");
   document.getElementById("controles").classList.remove("oculto");
+  document.getElementById("btnFinalizar").classList.remove("oculto");
+  document.getElementById("btnReintentar").classList.add("oculto");
+  document.getElementById("btnRepasarPrevios").classList.add("oculto");
+  document.getElementById("btnVolverMenu").classList.remove("oculto");
 
-  errores.forEach((q, idx) => {
+  preguntasSeleccionadas.forEach((q, idx) => {
     const div = document.createElement("div");
-    div.classList.add("pregunta");
-    div.innerHTML = `<p>${idx + 1}. [Repaso] ${q.pregunta}</p>`;
-    q.opciones.forEach((op, j) => {
-      div.innerHTML += `<label style="display:block;margin:4px 0;"><input type="radio" name="p${idx}" value="${j}"> ${op}</label>`;
+    div.className = "pregunta";
+    div.style.marginBottom = "0.8rem";
+    div.innerHTML = `<p>${idx + 1}. [Repaso] ${q.p}</p>`;
+    q.r.forEach((op, j) => {
+      const name = `p${idx}`;
+      div.innerHTML += `<label style="display:block; margin:4px 0;"><input type="radio" name="${name}" value="${j}"> ${op}</label>`;
     });
     contenedor.appendChild(div);
   });
 }
+
+// limpiar historial de errores (opcional)
+function limpiarErroresGuardados() {
+  if (confirm("¿Deseas eliminar todas las preguntas guardadas para repaso?")) {
+    localStorage.removeItem(STORAGE_KEY);
+    alert("Errores guardados eliminados.");
+    // ocultar el botón si existe
+    const btn = document.getElementById("btnRepasarPrevios");
+    if (btn) btn.classList.add("oculto");
+  }
+}
+
+// --- Inicialización ---
+document.addEventListener("DOMContentLoaded", () => {
+  // Si la sección 'examen' es visible al cargar, reiniciamos su vista
+  // (normalmente mostrarSeccion('inicio') se usa al entrar)
+});
